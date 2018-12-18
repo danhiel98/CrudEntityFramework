@@ -46,8 +46,12 @@ namespace ConsolaEntityFramework
             using (AgendaEntities cnx = new AgendaEntities())
             {
                 var persona = cnx.Persona.Single(p => p.Id == id);
-                if (persona.Telefono.Count > 0) // Si la persona tiene números de teléfono se deben eliminar
-                    EliminarTelefonos(persona.Id);
+                if (persona.Telefono.Count > 0)
+                {
+                    var tels = cnx.Telefono.Where(t => t.IdPersona == persona.Id);
+                    cnx.Telefono.RemoveRange(tels);
+                }
+
                 cnx.Persona.Remove(persona);
                 cnx.SaveChanges();
             }
@@ -91,19 +95,6 @@ namespace ConsolaEntityFramework
                 var telefono = cnx.Telefono.Single(p => p.Id == id);
                 cnx.Telefono.Remove(telefono);
                 cnx.SaveChanges();
-            }
-        }
-
-        public void EliminarTelefonos(int idPersona)
-        {
-            using (AgendaEntities cnx = new AgendaEntities())
-            {
-                var tels = cnx.Telefono.Where(t => t.IdPersona == idPersona);
-                foreach (var t in tels)
-                {
-                    cnx.Telefono.Remove(t);
-                    cnx.SaveChanges();
-                }
             }
         }
         #endregion
